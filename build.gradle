@@ -58,8 +58,8 @@ subprojects {
             if (isMavenDefined) {
                 System.out.println("Publishing to Maven Repo")
 
-                def snapshots = "https://maven.topi.wtf/snapshots"
-                def releases = "https://maven.topi.wtf/releases"
+                def snapshots = "https://maven.kikkia.dev/snapshots"
+                def releases = "https://maven.kikkia.dev/releases"
 
                 maven {
                     name = "Reposilite"
