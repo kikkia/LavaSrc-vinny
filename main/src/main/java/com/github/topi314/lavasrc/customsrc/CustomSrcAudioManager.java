@@ -77,8 +77,7 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 		if (json == null || json.index(0).get("id").isNull()) {
 			return AudioReference.NO_TRACK;
 		}
-		log.info(json.index(0).text());
-		return this.parseTrack(json);
+		return this.parseTrack(json.index(0));
 	}
 
 	private AudioItem getSearch(String query) throws IOException {
