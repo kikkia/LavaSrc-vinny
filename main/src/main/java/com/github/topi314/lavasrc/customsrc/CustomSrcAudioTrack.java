@@ -1,5 +1,6 @@
 package com.github.topi314.lavasrc.customsrc;
 
+import com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack;
 import com.sedmelluq.discord.lavaplayer.container.mp3.Mp3AudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.PersistentHttpStream;
@@ -23,7 +24,7 @@ public class CustomSrcAudioTrack extends DelegatedAudioTrack {
 		var downloadLink = this.trackInfo.uri;
 		try (var httpInterface = this.audioManager.getHttpInterface()) {
 			try (var stream = new PersistentHttpStream(httpInterface, new URI(downloadLink), this.trackInfo.length)) {
-				processDelegate(new Mp3AudioTrack(this.trackInfo, stream), localAudioTrackExecutor);
+				processDelegate(new MatroskaAudioTrack(this.trackInfo, stream), localAudioTrackExecutor);
 			}
 		}
 	}
