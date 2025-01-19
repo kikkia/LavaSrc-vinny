@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpConfigurable;
+import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import org.apache.http.client.config.RequestConfig;
@@ -148,5 +149,9 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 
 	public String getSearchUrl(String search) {
 		return baseUrl + "?p=" + key + "&q=" + search;
+	}
+
+	public HttpInterface getHttpInterface() {
+		return this.httpInterfaceManager.getInterface();
 	}
 }
