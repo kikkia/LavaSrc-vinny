@@ -26,7 +26,6 @@ public class DefaultMirroringAudioTrackResolver implements MirroringAudioTrackRe
 	@Override
 	public AudioItem apply(MirroringAudioTrack mirroringAudioTrack) {
 		for (var provider : providers) {
-			log.info("USING PROVIDER: {}", provider);
 			if (provider.startsWith(SpotifySourceManager.SEARCH_PREFIX)) {
 				log.warn("Can not use spotify search as search provider!");
 				continue;
@@ -57,7 +56,6 @@ public class DefaultMirroringAudioTrackResolver implements MirroringAudioTrackRe
 			}
 			// If the track is an empty playlist, skip the provider
 			if (item instanceof AudioPlaylist && ((AudioPlaylist) item).getTracks().isEmpty() || item == AudioReference.NO_TRACK) {
-				log.info("BAD RESULT: {}", item);
 				continue;
 			}
 			return item;
