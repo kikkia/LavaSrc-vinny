@@ -73,9 +73,11 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 
 	private AudioItem getTrackByISRC(String isrc) throws IOException {
 		var json = this.getJson(getISRCSearchUrl(URLEncoder.encode(isrc, StandardCharsets.UTF_8)));
+		log.info("Getting track for isrc: {}", isrc);
 		if (json == null || json.index(0).get("id").isNull()) {
 			return AudioReference.NO_TRACK;
 		}
+		log.info(json.index(0).text());
 		return this.parseTrack(json);
 	}
 
@@ -100,6 +102,7 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 			json.get("picture").text(),
 			json.get("isrc").index(0).text()
 		);
+		log.info("Info found for custom {}: {}", track.title, track.uri);
 		return new CustomSrcAudioTrack(track, this);
 	}
 
