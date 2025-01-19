@@ -5,6 +5,7 @@ import com.github.topi314.lavalyrics.api.LyricsManagerConfiguration;
 import com.github.topi314.lavasearch.SearchManager;
 import com.github.topi314.lavasearch.api.SearchManagerConfiguration;
 import com.github.topi314.lavasrc.applemusic.AppleMusicSourceManager;
+import com.github.topi314.lavasrc.customsrc.CustomSrcAudioManager;
 import com.github.topi314.lavasrc.deezer.DeezerAudioSourceManager;
 import com.github.topi314.lavasrc.deezer.DeezerAudioTrack;
 import com.github.topi314.lavasrc.flowerytts.FloweryTTSSourceManager;
@@ -43,8 +44,9 @@ public class LavaSrcPlugin implements AudioPlayerManagerConfiguration, SearchMan
 	private YoutubeSearchManager youtube;
 	private VkMusicSourceManager vkMusic;
 	private TidalSourceManager tidal;
+	private CustomSrcAudioManager customMusic;
 
-	public LavaSrcPlugin(LavaSrcConfig pluginConfig, SourcesConfig sourcesConfig, LyricsSourcesConfig lyricsSourcesConfig, SpotifyConfig spotifyConfig, AppleMusicConfig appleMusicConfig, DeezerConfig deezerConfig, YandexMusicConfig yandexMusicConfig, FloweryTTSConfig floweryTTSConfig, YouTubeConfig youTubeConfig, VkMusicConfig vkMusicConfig, TidalConfig tidalConfig) {
+	public LavaSrcPlugin(LavaSrcConfig pluginConfig, SourcesConfig sourcesConfig, LyricsSourcesConfig lyricsSourcesConfig, SpotifyConfig spotifyConfig, AppleMusicConfig appleMusicConfig, DeezerConfig deezerConfig, YandexMusicConfig yandexMusicConfig, FloweryTTSConfig floweryTTSConfig, YouTubeConfig youTubeConfig, VkMusicConfig vkMusicConfig, TidalConfig tidalConfig, CustomSrcConfig customSrcConfig) {
 		log.info("Loading LavaSrc plugin...");
 		this.sourcesConfig = sourcesConfig;
 		this.lyricsSourcesConfig = lyricsSourcesConfig;
@@ -129,6 +131,13 @@ public class LavaSrcPlugin implements AudioPlayerManagerConfiguration, SearchMan
 				this.tidal.setSearchLimit(tidalConfig.getSearchLimit());
 			}
 		}
+		if (sourcesConfig.isCustomSrc()) {
+			this.customMusic = new CustomSrcAudioManager(
+				customSrcConfig.getKey(),
+				customSrcConfig.getBaseUrl(),
+				customSrcConfig.getName()
+			);
+		}
 	}
 
 	private boolean hasNewYoutubeSource() {
@@ -171,6 +180,10 @@ public class LavaSrcPlugin implements AudioPlayerManagerConfiguration, SearchMan
 		if (this.tidal != null) {
 			log.info("Registering Tidal audio source manager...");
 			manager.registerSourceManager(this.tidal);
+		}
+		if (this.customMusic != null) {
+			log.info("Registering Custom music audio source manager...");
+			manager.registerSourceManager(this.customMusic);
 		}
 		return manager;
 	}

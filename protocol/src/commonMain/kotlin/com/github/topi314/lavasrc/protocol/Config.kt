@@ -9,6 +9,7 @@ data class Config(
     val deezer: DeezerConfig? = null,
     val yandexMusic: YandexMusicConfig? = null,
     val vkMusic: VkMusicConfig? = null,
+    val customSrc: CustomSrcConfig? = null,
 )
 
 @Serializable
@@ -48,4 +49,10 @@ data class YandexMusicConfig(
 @Serializable
 data class VkMusicConfig(
     val userToken: String? = null,
+)
+
+@Serializable
+data class CustomSrcConfig(
+    val key: String? = null,
+    val baseUrl: String? = null,
 )
