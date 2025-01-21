@@ -1,10 +1,8 @@
 package com.github.topi314.lavasrc.customsrc;
 
-import com.github.topi314.lavasearch.AudioSearchManager;
-import com.github.topi314.lavasearch.result.AudioSearchResult;
-import com.github.topi314.lavasrc.ExtendedAudioSourceManager;
 import com.github.topi314.lavasrc.LavaSrcTools;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpConfigurable;
@@ -14,12 +12,12 @@ import com.sedmelluq.discord.lavaplayer.track.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +26,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements HttpConfigurable {
+public class CustomSrcAudioManager implements HttpConfigurable, AudioSourceManager {
 	public static final String SEARCH_PREFIX = "custsearch:";
 	public static final String ISRC_PREFIX = "custisrc:";
 	private String baseUrl;
@@ -53,6 +51,16 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 	@Override
 	public AudioItem loadItem(AudioPlayerManager audioPlayerManager, AudioReference audioReference) {
 		return this.loadItem(audioReference.identifier);
+	}
+
+	@Override
+	public boolean isTrackEncodable(AudioTrack audioTrack) {
+		return true;
+	}
+
+	@Override
+	public void encodeTrack(AudioTrack audioTrack, DataOutput dataOutput) throws IOException {
+		// Nothing to do
 	}
 
 	public AudioItem loadItem(String identifier) {
@@ -113,7 +121,6 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 
 	@Override
 	public AudioTrack decodeTrack(AudioTrackInfo audioTrackInfo, DataInput dataInput) throws IOException {
-		super.decodeTrack(dataInput);
 		return new CustomSrcAudioTrack(audioTrackInfo, this);
 	}
 

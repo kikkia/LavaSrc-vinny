@@ -1,7 +1,6 @@
 package com.github.topi314.lavasrc.customsrc;
 
 import com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack;
-import com.sedmelluq.discord.lavaplayer.container.mp3.Mp3AudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.PersistentHttpStream;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
