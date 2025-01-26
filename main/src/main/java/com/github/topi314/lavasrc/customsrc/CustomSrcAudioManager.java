@@ -39,14 +39,18 @@ public class CustomSrcAudioManager implements HttpConfigurable, AudioSourceManag
 	private String baseUrl;
 	private String key;
 	private String name;
+	private String userAgent = "Lavasrc";
 
 	private HttpInterfaceManager httpInterfaceManager;
 	private static final Logger log = LoggerFactory.getLogger(CustomSrcAudioManager.class);
 
-	public CustomSrcAudioManager(String key, String baseUrl, @Nullable String name) {
+	public CustomSrcAudioManager(String key, String baseUrl, @Nullable String name, @Nullable String userAgent) {
 		this.key = key;
 		this.name = name;
 		this.baseUrl = baseUrl;
+		if (userAgent != null) {
+			this.userAgent = userAgent;
+		}
 		this.httpInterfaceManager = HttpClientTools.createCookielessThreadLocalManager();
 	}
 
@@ -172,7 +176,7 @@ public class CustomSrcAudioManager implements HttpConfigurable, AudioSourceManag
 	public JsonBrowser getJson(String uri) throws IOException {
 		var request = new HttpGet(uri);
 		request.setHeader("Accept", "application/json");
-		request.setHeader("User-Agent", "vinny");
+		request.setHeader("User-Agent", userAgent);
 		return LavaSrcTools.fetchResponseAsJson(this.httpInterfaceManager.getInterface(), request);
 	}
 

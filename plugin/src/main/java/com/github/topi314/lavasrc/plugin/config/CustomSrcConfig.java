@@ -9,6 +9,7 @@ public class CustomSrcConfig {
 	private String key;
 	private String baseUrl;
 	private String name;
+	private String userAgent;
 
 	public String getKey() {
 		return this.key;
@@ -32,5 +33,13 @@ public class CustomSrcConfig {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
 	}
 }
