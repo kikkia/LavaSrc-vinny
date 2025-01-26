@@ -172,6 +172,7 @@ public class CustomSrcAudioManager implements HttpConfigurable, AudioSourceManag
 	public JsonBrowser getJson(String uri) throws IOException {
 		var request = new HttpGet(uri);
 		request.setHeader("Accept", "application/json");
+		request.setHeader("User-Agent", "vinny");
 		return LavaSrcTools.fetchResponseAsJson(this.httpInterfaceManager.getInterface(), request);
 	}
 
