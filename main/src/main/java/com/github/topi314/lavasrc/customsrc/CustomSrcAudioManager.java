@@ -2,9 +2,10 @@ package com.github.topi314.lavasrc.customsrc;
 
 import com.github.topi314.lavasearch.AudioSearchManager;
 import com.github.topi314.lavasearch.result.AudioSearchResult;
-import com.github.topi314.lavasrc.ExtendedAudioSourceManager;
+import com.github.topi314.lavasearch.result.BasicAudioSearchResult;
 import com.github.topi314.lavasrc.LavaSrcTools;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpConfigurable;
@@ -20,17 +21,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements HttpConfigurable {
+public class CustomSrcAudioManager implements HttpConfigurable, AudioSourceManager, AudioSearchManager {
 	public static final String SEARCH_PREFIX = "custsearch:";
 	public static final String ISRC_PREFIX = "custisrc:";
+	public static final Set<AudioSearchResult.Type> SEARCH_TYPES = Set.of(AudioSearchResult.Type.TRACK);
 	private String baseUrl;
 	private String key;
 	private String name;
@@ -51,8 +56,37 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 	}
 
 	@Override
+	public @Nullable AudioSearchResult loadSearch(@NotNull String s, @NotNull Set<AudioSearchResult.Type> set) {
+		if (!set.isEmpty() && !set.stream().allMatch(it -> it.equals(AudioSearchResult.Type.TRACK))) {
+			throw new RuntimeException(getSourceName() + " can only search tracks");
+		}
+		try {
+			return getSearchResults(s);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	private AudioSearchResult getSearchResults(String s) throws IOException {
+		var json = getJson(getSearchUrl(s));
+		var tracks = parseTracks(json);
+		return new BasicAudioSearchResult(tracks, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+	}
+
+	@Override
 	public AudioItem loadItem(AudioPlayerManager audioPlayerManager, AudioReference audioReference) {
 		return this.loadItem(audioReference.identifier);
+	}
+
+	@Override
+	public boolean isTrackEncodable(AudioTrack audioTrack) {
+		return true;
+	}
+
+	@Override
+	public void encodeTrack(AudioTrack audioTrack, DataOutput dataOutput) throws IOException {
+		// Nothing to do
 	}
 
 	public AudioItem loadItem(String identifier) {
@@ -93,7 +127,7 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 		var track = new AudioTrackInfo(
 			json.get("title").text(),
 			json.get("artist").text(),
-			json.get("duration").asLong(0),
+			json.get("duration").asLong(0) * 1000,
 			id,
 			false,
 			json.get("versions").index(0).get("url").text(),
@@ -113,7 +147,6 @@ public class CustomSrcAudioManager extends ExtendedAudioSourceManager implements
 
 	@Override
 	public AudioTrack decodeTrack(AudioTrackInfo audioTrackInfo, DataInput dataInput) throws IOException {
-		super.decodeTrack(dataInput);
 		return new CustomSrcAudioTrack(audioTrackInfo, this);
 	}
 

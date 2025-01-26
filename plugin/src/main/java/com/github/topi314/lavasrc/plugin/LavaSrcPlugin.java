@@ -202,6 +202,10 @@ public class LavaSrcPlugin implements AudioPlayerManagerConfiguration, SearchMan
 			log.info("Registering VK Music search manager...");
 			manager.registerSearchManager(this.vkMusic);
 		}
+		if (this.customMusic != null && this.sourcesConfig.isCustomSrc()) {
+			log.info("Registering custom search manager");
+			manager.registerSearchManager(this.customMusic);
+		}
 		return manager;
 	}
 
