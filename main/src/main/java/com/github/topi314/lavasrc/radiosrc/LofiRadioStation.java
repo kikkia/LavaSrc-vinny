@@ -25,6 +25,7 @@ public class LofiRadioStation {
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	private volatile ScheduledFuture<?> nextTrackFuture;
 	private LofiRadioSrcAudioManager lofiRadio;
+	int repeatFails = 0;
 
 	public LofiRadioStation(String name, String id, String playlistUrl, int refreshBuffer, LofiRadioSrcAudioManager lofiRadio) {
 		this.name = name;
@@ -64,9 +65,11 @@ public class LofiRadioStation {
 			LinkedList<LofiTrackInfo> newPlaylist = fetchPlaylistSync();
 			if (newPlaylist.isEmpty()) {
 				log.warn("Fetched empty playlist for station {}, retrying in 30 seconds", name);
+				repeatFails++;
 				scheduler.schedule(this::fetchAndUpdatePlaylist, 30, TimeUnit.SECONDS);
 				return;
 			}
+			repeatFails = 0;
 
 			playlist.clear();
 			playlist.addAll(newPlaylist);

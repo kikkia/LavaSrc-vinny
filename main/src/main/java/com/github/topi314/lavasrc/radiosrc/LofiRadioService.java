@@ -10,10 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class LofiRadioService {
 	private final String stationsUrl;
 	private final String allUrl;
+	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	private static final Logger log = LoggerFactory.getLogger(LofiRadioService.class);
 	private final ConcurrentHashMap<String, LofiRadioStation> _radioStations = new ConcurrentHashMap<>();
 	private final LofiRadioSrcAudioManager lofiRadio;
@@ -61,6 +65,7 @@ public class LofiRadioService {
 			_radioStations.put(station.getSecond(), new LofiRadioStation(station.getFirst(), station.getSecond(), stationsUrl, 1, lofiRadio));
 			log.info("Loaded station: {} (ID: {})", station.getFirst(), station.getSecond());
 		}
+		scheduler.schedule(this::healthCheck, 30, TimeUnit.SECONDS);
 	}
 
 	public LofiRadioStation getStation(String stationId) {
@@ -71,6 +76,21 @@ public class LofiRadioService {
 		for (LofiRadioStation station : _radioStations.values()) {
 			station.stop();
 		}
+	}
+
+	public void restartAllStations() {
+		stopAllStations();
+		loadInitialStations();
+	}
+
+	private void healthCheck() {
+		for (LofiRadioStation s : _radioStations.values()) {
+			if (s.repeatFails > 5) {
+				restartAllStations();
+				return;
+			}
+		}
+		scheduler.schedule(this::healthCheck, 30, TimeUnit.SECONDS);
 	}
 
 	private class Pair<K, V> {
